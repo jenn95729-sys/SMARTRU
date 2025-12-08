@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Smart RU - Restaurante Universitário UFMG</title>
+
+    <link rel="icon" type="image/png" href="uf2.png" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <img src="uf.png" class="logo-ufmg-top" alt="UFMG" />
+            <span class="titulo-sistema">Smart RU</span>
+        </div>
+
+        <div class="topbar-right" id="menu-usuario" style="display:none;">
+            <img id="avatar-usuario"
+                 alt="Foto do usuário"
+                 style="width:32px;height:32px;border-radius:50%;object-fit:cover;margin-right:8px;display:none;">
+            <span id="nome-usuario"></span>
+            <span class="seta-menu">▼</span>
+
+            <div class="dropdown-menu" id="dropdownMenu">
+                <button onclick="abrirTelaPerfil()">Meu perfil</button>
+                <button onclick="abrirTela('tela-como')">Como funciona</button>
+                <button onclick="abrirTela('tela-precos')">Preços</button>
+                <button onclick="abrirTela('tela-horarios')">Horários</button>
+                <button onclick="abrirQRCode()">Meu QR Code RU</button>
+                <button onclick="logout()">Sair</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- SUBHEADER -->
+    <div class="subheader">
+        <h2>Sistema de Pagamento do Restaurante Universitário — UFMG</h2>
+    </div>
+
+    <main>
+
+        <!-- LOGIN -->
+        <section id="tela-login" class="tela">
+            <div class="card-suave">
+                <h2>Entrar</h2>
+
+                <div class="campo">
+                    <label>Matrícula / SIAPE</label>
+                    <input
+                        id="loginId"
+                        type="text"
+                        inputmode="numeric"
+                        pattern="\d*"
+                        placeholder="Seu identificador institucional"
+                    />
+                </div>
+
+                <button class="btn-principal" onclick="login()">Acessar</button>
+                <button class="btn-link" onclick="abrirTela('tela-cadastro')">Criar novo cadastro</button>
+            </div>
+
+            <div class="info-bloco">
+                <h3>Informações úteis</h3>
+
+                <ul>
+                    <li>
+                        <button class="link-inline" onclick="abrirTela('tela-precos')">
+                            Ver preços
+                        </button>
+                    </li>
+                    <li>
+                        <button class="link-inline" onclick="abrirTela('tela-horarios')">
+                            Ver horários
+                        </button>
+                    </li>
+                    <li>
+                        <button class="link-inline" onclick="abrirTela('tela-como')">
+                            Como funciona o Smart RU
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- CADASTRO -->
+        <section id="tela-cadastro" class="tela">
+            <div class="card-suave">
+                <h2>Cadastro</h2>
+
+                <div class="campo">
+                    <label>Nome completo</label>
+                    <input id="cadNome" />
+                </div>
+
+                <div class="campo" id="campoMatricula">
+                    <label>Matrícula / SIAPE (somente para não visitantes)</label>
+                    <input
+                        id="cadId"
+                        type="text"
+                        inputmode="numeric"
+                        pattern="\d*"
+                    />
+                </div>
+
+                <!-- FOTO DE PERFIL (APENAS NÃO-VISITANTE) -->
+                <div class="campo" id="campoFotoPerfil">
+                    <label>Foto de perfil (opcional)</label>
+                    <input type="file" id="cadFoto" accept="image/*" />
+                    <small style="font-size:11px;">
+                        Use uma foto nítida do rosto. Disponível apenas para estudantes e servidores.
+                    </small>
+                    <div id="previewFotoContainer" style="margin-top:8px; display:none;">
+                        <img id="previewFoto"
+                             alt="Prévia da foto"
+                             style="width:70px;height:70px;border-radius:50%;object-fit:cover;">
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label>Categoria</label>
+                    <select id="cadCategoria">
+                        <option value="" disabled selected>Escolha a categoria</option>
+                        <option value="FUMP I|0">FUMP I</option>
+                        <option value="FUMP II/III|1">FUMP II/III</option>
+                        <option value="FUMP IV-A|2">FUMP IV-A</option>
+                        <option value="FUMP IV-B|2.9">FUMP IV-B</option>
+                        <option value="Estudante não assistido|5.6">Estudante não assistido</option>
+                        <option value="Servidor TA|8.5">Servidor TA</option>
+                        <option value="Terceirizado PRA|8.5">Terceirizado PRA</option>
+                        <option value="Professor|13">Professor</option>
+                        <option value="Usuário especial|13">Usuário especial</option>
+                        <option value="Visitante|17.5">Visitante</option>
+                    </select>
+                </div>
+
+                <p id="infoCafeCadastro" class="aviso-matricula"></p>
+
+                <p class="aviso-matricula">
+                    Atenção: se você não informar matrícula/SIAPE, selecione a categoria
+                    <strong>Visitante</strong> para finalizar o cadastro. Para visitantes,
+                    não é necessário informar matrícula nem foto de perfil.
+                </p>
+
+                <button class="btn-principal" onclick="salvarCadastro()">Salvar</button>
+                <button class="btn-secundario" onclick="voltarPrincipal()">Voltar</button>
+            </div>
+        </section>
+
+        <!-- HOME -->
+        <section id="tela-home" class="tela">
+            <h2>Bem-vindo(a)!</h2>
+
+            <button class="btn-principal" onclick="abrirTelaPagamento()">
+                Gerar QR Code de pagamento
+            </button>
+            <button class="btn-secundario" onclick="abrirQRCode()">
+                Meu QR Code RU
+            </button>
+            <button class="btn-link" onclick="abrirTela('tela-precos')">Ver preços</button>
+            <button class="btn-link" onclick="abrirTela('tela-horarios')">Ver horários</button>
+            <button class="btn-link" onclick="abrirTela('tela-como')">Como funciona</button>
+        </section>
+
+        <!-- PERFIL -->
+        <section id="tela-perfil" class="tela">
+            <h2>Meu perfil</h2>
+
+            <div class="card-suave">
+                <div id="perfil_foto_container"
+                     style="text-align:center;margin-bottom:12px;display:none;">
+                    <img id="perfil_foto"
+                         alt="Foto do usuário"
+                         style="width:90px;height:90px;border-radius:50%;object-fit:cover;">
+                </div>
+
+                <p><strong>Nome:</strong> <span id="perfil_nome"></span></p>
+                <p><strong>Matrícula / SIAPE:</strong> <span id="perfil_id"></span></p>
+                <p><strong>Categoria:</strong> <span id="perfil_categoria"></span></p>
+                <p><strong>Última refeição registrada:</strong> <span id="perfil_refeicao"></span></p>
+            </div>
+
+            <button class="btn-secundario" onclick="voltarPrincipal()">Voltar</button>
+        </section>
+
+        <!-- PAGAMENTO / STATUS -->
+        <section id="tela-status" class="tela">
+            <h2>Pagamento da refeição</h2>
+
+            <div class="status-bloco">
+                <p><strong>Nome:</strong> <span id="st_nome"></span></p>
+                <p><strong>Categoria:</strong> <span id="st_categoria"></span></p>
+                <p><strong>Preço:</strong> <span id="st_preco"></span></p>
+                <p><strong>Ticket:</strong> <span id="st_ticket"></span></p>
+                <p><strong>Status pagamento:</strong> <span id="st_pagamento"></span></p>
+            </div>
+
+            <div class="card-pagamento">
+                <div class="campo">
+                    <label>Unidade do RU</label>
+                    <select id="ruSelecionado">
+                        <option value="" disabled selected>Selecione o RU</option>
+                        <option value="setorial1">RU Setorial I</option>
+                        <option value="setorial2">RU Setorial II</option>
+                        <option value="saude">RU Saúde</option>
+                        <option value="direito">RU Direito</option>
+                    </select>
+                </div>
+
+                <!-- Seletor de refeição para testes em modo desenvolvedor -->
+                <div class="campo" id="campoRefeicaoDev" style="display:none;">
+                    <label>Refeição (modo teste)</label>
+                    <select id="refeicaoDev">
+                        <option value="">Automático pelo horário</option>
+                        <option value="cafe">Café da manhã</option>
+                        <option value="almoco">Almoço</option>
+                        <option value="jantar">Jantar</option>
+                    </select>
+                    <small style="font-size: 11px;">
+                        Este controle é usado apenas em modo desenvolvedor.
+                    </small>
+                </div>
+
+                <h3>Pagamento via PIX</h3>
+                <p style="font-size: 14px; margin-bottom: 10px;">
+                    O sistema identifica automaticamente a refeição de acordo com o horário
+                    e com a unidade do RU selecionada, gera o valor correspondente e emite
+                    o QR Code de pagamento quando houver cobrança.
+                </p>
+
+                <button class="btn-principal" onclick="pagarPix()">Gerar QR PIX</button>
+                <button class="btn-secundario" onclick="simularPagamento()">Simular pagamento concluído</button>
+
+                <div id="pixArea" class="pix-area" style="display:none;">
+                    <p>Escaneie o QR abaixo no seu app do banco:</p>
+                    <div id="pix-qrcode"></div>
+                    <p style="margin-top:10px; font-size:13px;">Ou use PIX copia e cola:</p>
+                    <textarea id="pix-copia-cola" readonly></textarea>
+                </div>
+            </div>
+
+            <button class="btn-secundario" onclick="abrirTela('tela-home')">Voltar</button>
+        </section>
+
+        <!-- QR DE ENTRADA RU -->
+        <section id="tela-qrcode" class="tela">
+            <h2>Seu QR Code de acesso ao RU</h2>
+
+            <div id="qrcode" class="qrcode-area"></div>
+
+            <p class="qr-frase">Agora, apresente este QR-CODE no RU!</p>
+
+            <div class="qr-info">
+                <div id="qr_foto_container"
+                     style="margin-bottom:10px; display:none; text-align:center;">
+                    <img id="qr_foto"
+                         alt="Foto do usuário"
+                         style="width:80px;height:80px;border-radius:50%;object-fit:cover;">
+                </div>
+                <p><strong>Nome:</strong> <span id="qr_nome"></span></p>
+                <p><strong>Categoria:</strong> <span id="qr_categoria"></span></p>
+                <p><strong>Preço:</strong> <span id="qr_preco"></span></p>
+            </div>
+
+            <button class="btn-secundario" onclick="abrirTela('tela-home')">Voltar</button>
+        </section>
+
+        <!-- PREÇOS -->
+        <section id="tela-precos" class="tela">
+            <h2>Preços do Restaurante Universitário</h2>
+
+            <div class="card-precos">
+                <ul>
+                    <li><strong>FUMP I:</strong> Gratuito</li>
+                    <li><strong>FUMP II/III:</strong> R$ 1,00</li>
+                    <li><strong>FUMP IV-A:</strong> R$ 2,00</li>
+                    <li><strong>FUMP IV-B:</strong> R$ 2,90</li>
+                    <li><strong>Estudante não assistido:</strong> R$ 5,60</li>
+                    <li><strong>Servidor TA:</strong> R$ 8,50</li>
+                    <li><strong>Terceirizado PRA:</strong> R$ 8,50</li>
+                    <li><strong>Professor/Usuário especial:</strong> R$ 13,00</li>
+                    <li><strong>Visitante:</strong> R$ 17,50</li>
+                </ul>
+
+                <p style="margin-top: 10px; font-size: 14px;">
+                    O café da manhã é servido somente para estudantes assistidos pela FUMP,
+                    nos RUs e horários em que essa refeição é ofertada.
+                </p>
+
+                <p style="margin-top: 10px; font-size: 14px;">
+                    Para informações sobre assistência estudantil, acesse o site da
+                    <a target="_blank" href="https://fump.ufmg.br/estudantes-da-graduacao/">
+                        FUMP
+                    </a>.
+                </p>
+            </div>
+
+            <button class="btn-secundario" onclick="voltarPrincipal()">Voltar</button>
+        </section>
+
+        <!-- HORÁRIOS -->
+        <section id="tela-horarios" class="tela">
+            <h2>Horários de funcionamento dos RUs</h2>
+
+            <div class="card-precos">
+                <table style="width:100%; border-collapse: collapse; font-size: 14px;">
+                    <thead>
+                        <tr>
+                            <th style="border:1px solid #ccc; padding:6px;">Restaurante Universitário</th>
+                            <th style="border:1px solid #ccc; padding:6px;">Café da manhã<br>(para posicionados níveis I, II e III)</th>
+                            <th style="border:1px solid #ccc; padding:6px;">Almoço</th>
+                            <th style="border:1px solid #ccc; padding:6px;">Almoço aos sábados<br>(exceto feriados)</th>
+                            <th style="border:1px solid #ccc; padding:6px;">Jantar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="border:1px solid #ccc; padding:6px;">RU Setorial I</td>
+                            <td style="border:1px solid #ccc; padding:6px;">NÃO SERVE</td>
+                            <td style="border:1px solid #ccc; padding:6px;">10:30 às 14:00</td>
+                            <td style="border:1px solid #ccc; padding:6px;">11:00 às 13:00</td>
+                            <td style="border:1px solid #ccc; padding:6px;">17:10 às 19:00</td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #ccc; padding:6px;">RU Setorial II</td>
+                            <td style="border:1px solid #ccc; padding:6px;">06:45 às 08:00</td>
+                            <td style="border:1px solid #ccc; padding:6px;">10:30 às 14:00</td>
+                            <td style="border:1px solid #ccc; padding:6px;">NÃO SERVE</td>
+                            <td style="border:1px solid #ccc; padding:6px;">NÃO SERVE</td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #ccc; padding:6px;">RU Saúde</td>
+                            <td style="border:1px solid #ccc; padding:6px;">07:00 às 08:00</td>
+                            <td style="border:1px solid #ccc; padding:6px;">10:30 às 14:00</td>
+                            <td style="border:1px solid #ccc; padding:6px;">11:30 às 13:00</td>
+                            <td style="border:1px solid #ccc; padding:6px;">17:10 às 19:00</td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #ccc; padding:6px;">RU Direito</td>
+                            <td style="border:1px solid #ccc; padding:6px;">07:00 às 08:00</td>
+                            <td style="border:1px solid #ccc; padding:6px;">11:00 às 14:00</td>
+                            <td style="border:1px solid #ccc; padding:6px;">NÃO SERVE</td>
+                            <td style="border:1px solid #ccc; padding:6px;">17:30 às 19:00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <button class="btn-secundario" onclick="voltarPrincipal()">Voltar</button>
+        </section>
+
+        <!-- COMO FUNCIONA (RESUMO) -->
+        <section id="tela-como" class="tela">
+            <h2>Como funciona o Smart RU</h2>
+
+            <div class="card-ajuda">
+                <p>
+                    O Smart RU funciona como um sistema de pagamento digital:
+                    você faz o cadastro, seleciona a unidade do Restaurante Universitário,
+                    o sistema identifica qual refeição está sendo servida naquele horário
+                    e gera um QR Code para pagamento e acesso quando houver cobrança.
+                </p>
+                <p>
+                    Estudantes atendidos pela FUMP têm direito ao café da manhã sem custo,
+                    nos RUs e horários em que ele é oferecido.
+                </p>
+                <p>
+                    Visitantes não precisam informar matrícula ou SIAPE: basta selecionar
+                    a categoria <strong>Visitante</strong> no cadastro, e o sistema cria
+                    uma identificação interna automaticamente. Visitantes também não possuem
+                    foto de perfil no sistema.
+                </p>
+                <p style="font-size: 14px; margin-top: 10px;">
+                    Para informações oficiais sobre o Restaurante Universitário da UFMG,
+                    cardápios, regras e funcionamento, acesse:
+                    <a href="https://www.ufmg.br/viverufmg/vida-academica/alimentacao-no-campus/"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                       Site oficial do RU da UFMG
+                    </a>.
+                </p>
+
+                <button class="link-inline" onclick="abrirTela('tela-ajuda')">
+                    Ver explicação completa
+                </button>
+            </div>
+
+            <button class="btn-secundario" onclick="voltarPrincipal()">Voltar</button>
+        </section>
+
+        <!-- AJUDA DETALHADA -->
+        <section id="tela-ajuda" class="tela">
+            <h2>Como funciona o Smart RU</h2>
+
+            <div class="card-ajuda">
+                <h3>Passo a passo</h3>
+                <ul>
+                    <li>Crie seu cadastro informando nome e categoria.</li>
+                    <li>Se você for estudante ou servidor, informe também sua matrícula ou SIAPE.</li>
+                    <li>Visitantes não precisam colocar matrícula; o sistema gera uma identificação interna automaticamente e não utiliza foto de perfil.</li>
+                    <li>Acesse o sistema e selecione a unidade do RU em que você está.</li>
+                    <li>O sistema verifica o horário e identifica automaticamente se é café da manhã, almoço ou jantar.</li>
+                    <li>É gerado o valor correspondente àquela refeição e, quando houver cobrança, um QR Code de pagamento via PIX.</li>
+                    <li>Após a confirmação do pagamento (ou identificação de refeição gratuita), um QR Code de acesso é liberado.</li>
+                    <li>Apresente o QR Code na entrada do RU para validação.</li>
+                </ul>
+                <p style="font-size: 14px; margin-top: 10px;">
+                    O café da manhã é exclusivo para estudantes atendidos pela FUMP (posicionados nos níveis I, II e III).
+                    Nenhuma outra categoria pode utilizar café da manhã pelo sistema.
+                </p>
+                <p style="font-size: 14px; margin-top: 10px;">
+                    Este sistema é experimental e não substitui as regras oficiais da UFMG.
+                    Para informações completas sobre o Restaurante Universitário, consulte o
+                    <a href="https://www.ufmg.br/viverufmg/vida-academica/alimentacao-no-campus/"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                       site oficial do RU da UFMG
+                    </a>.
+                </p>
+            </div>
+
+            <button class="btn-secundario" onclick="voltarPrincipal()">Voltar</button>
+        </section>
+
+    </main>
+
+    <footer class="rodape">
+        <p>Sistema experimental — UFMG</p>
+    </footer>
+
+    <!-- libs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

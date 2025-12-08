@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Validador • Smart RU</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #eef3fb, #dbe7ff);
+            font-family: Arial, sans-serif;
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background: #ffffff;
+            border-radius: 14px;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+            padding: 20px 18px 24px;
+            width: 100%;
+            max-width: 480px;
+        }
+
+        header {
+            text-align: left;
+            margin-bottom: 14px;
+            border-bottom: 1px solid #e4ecf5;
+            padding-bottom: 8px;
+        }
+
+        header h1 {
+            font-size: 19px;
+            color: #0a2740;
+            margin: 0 0 4px 0;
+        }
+
+        header p {
+            margin: 0;
+            color: #556;
+            font-size: 13px;
+        }
+
+        /* CÂMERA GRANDE */
+        #reader {
+            width: 100%;
+            max-width: 420px;
+            margin: 8px auto 10px;
+        }
+
+        #resultado {
+            margin-top: 10px;
+            padding: 14px 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            text-align: left;
+            display: none;
+        }
+
+        .ok {
+            background: #dffbe5;
+            color: #0b6830;
+            border: 1px solid #3ebc6d;
+        }
+
+        .erro {
+            background: #ffe1e1;
+            color: #a00000;
+            border: 1px solid #cc4444;
+        }
+
+        .painel-validacao {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .col-foto {
+            flex-shrink: 0;
+        }
+
+        .foto-usuario {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(0,0,0,0.06);
+        }
+
+        .foto-placeholder {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: #c9d6f5;
+            color: #1c2b4a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 22px;
+        }
+
+        .col-dados {
+            flex: 1;
+        }
+
+        .nome-usuario {
+            font-weight: 700;
+            color: #13233d;
+            margin-bottom: 2px;
+        }
+
+        .categoria-usuario {
+            font-size: 13px;
+            color: #445;
+            margin-bottom: 6px;
+        }
+
+        .msg-final {
+            margin-top: 6px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .msg-erro {
+            font-weight: bold;
+        }
+
+        .rodape-info {
+            margin-top: 10px;
+            font-size: 11px;
+            color: #667;
+            text-align: left;
+        }
+
+        .html5-qrcode-element {
+            font-family: inherit;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Validador de Acesso • Smart RU</h1>
+        <p>Aponte a câmera para o QR Code do RU.</p>
+    </header>
+
+    <div id="reader"></div>
+
+    <div id="resultado"></div>
+
+    <div class="rodape-info">
+        QR no formato <b>SQRU|TCK-...</b>. Leituras repetidas do mesmo ticket são ignoradas por 30s.
+    </div>
+</div>
+
+<script>
+    // Usa sempre a MESMA origem (localhost OU ngrok)
+    const API_BASE = "";
+
+    const resultado = document.getElementById("resultado");
+
+    function esc(str) {
+        return String(str ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    }
+
+    function iniciaisNome(nome) {
+        if (!nome) return "?";
+        const partes = String(nome).trim().split(/\s+/).filter(Boolean);
+        if (partes.length === 0) return "?";
+        if (partes.length === 1) return partes[0][0].toUpperCase();
+        return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
+    }
+
+    function mostrarErro(msg) {
+        resultado.style.display = "block";
+        resultado.className = "erro";
+        resultado.innerHTML = `<div class="msg-erro">${esc(msg)}</div>`;
+    }
+
+    function mostrarSucesso(data) {
+        const nome      = data.nome      ?? "—";
+        const categoria = data.categoria ?? "—";
+        const mensagem  = data.msg       ?? "Entrada liberada!";
+        const foto      = data.fotoPerfil || null; // se o backend mandar
+
+        const iniciais = iniciaisNome(nome);
+
+        resultado.style.display = "block";
+        resultado.className = "ok";
+
+        resultado.innerHTML = `
+            <div class="painel-validacao">
+                <div class="col-foto">
+                    ${
+                        foto
+                        ? `<img src="${esc(foto)}" class="foto-usuario" alt="Foto do usuário">`
+                        : `<div class="foto-placeholder">${esc(iniciais)}</div>`
+                    }
+                </div>
+                <div class="col-dados">
+                    <div class="nome-usuario">${esc(nome)}</div>
+                    <div class="categoria-usuario">${esc(categoria)}</div>
+                    <div class="msg-final">${esc(mensagem)}</div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Anti repetição (30s)
+    let ultimoTicket = null;
+    let ultimoTempo = 0;
+    const COOLDOWN_MS = 30000;
+
+    async function validarTicket(ticket) {
+        try {
+            const resp = await fetch(`/api/validar`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ticket })
+            });
+
+            const data = await resp.json();
+
+            if (data.ok) {
+                mostrarSucesso(data);
+            } else {
+                mostrarErro(data.msg ?? "Ticket não autorizado.");
+            }
+        } catch (err) {
+            console.error(err);
+            mostrarErro("Erro ao conectar ao servidor.");
+        }
+    }
+
+    function processarConteudo(texto) {
+        if (!texto.startsWith("SQRU|")) {
+            mostrarErro("QR inválido.");
+            return;
+        }
+
+        const ticket = texto.replace("SQRU|", "");
+        const agora = Date.now();
+
+        if (ticket === ultimoTicket && (agora - ultimoTempo) < COOLDOWN_MS) {
+            console.log("Ignorando ticket repetido (cooldown)");
+            return;
+        }
+
+        ultimoTicket = ticket;
+        ultimoTempo = agora;
+
+        validarTicket(ticket);
+    }
+
+    const scanner = new Html5QrcodeScanner(
+        "reader",
+        {
+            fps: 10,
+            qrbox: 280,
+            rememberLastUsedCamera: true,
+            showTorchButtonIfSupported: true,
+            showZoomSliderIfSupported: true
+        },
+        false
+    );
+
+    scanner.render(
+        (decodedText) => processarConteudo(decodedText),
+        () => {}
+    );
+</script>
+
+</body>
+</html>

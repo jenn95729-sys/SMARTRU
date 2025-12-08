@@ -1,0 +1,363 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+    background: #f4f7fb;
+    color: #1a1a1a;
+}
+
+/* TOPBAR */
+
+.topbar {
+    background: #162c46;
+    color: white;
+    padding: 10px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-ufmg-top {
+    height: 32px;
+    margin-right: 10px;
+}
+
+.titulo-sistema {
+    font-size: 18px;
+    font-weight: 700;
+    font-family: "Segoe UI", Arial, sans-serif;
+    letter-spacing: 0.5px;
+}
+
+#nome-usuario {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    position: relative;
+}
+
+.seta-menu {
+    font-size: 11px;
+    transition: 0.2s;
+}
+
+.menu-aberto .seta-menu {
+    transform: rotate(180deg);
+}
+
+/* DROPDOWN */
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 38px;
+    right: 0;
+    background: white;
+    min-width: 180px;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+    overflow: hidden;
+    z-index: 10;
+}
+
+.menu-aberto .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu button {
+    width: 100%;
+    padding: 10px 15px;
+    border: none;
+    background: white;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.dropdown-menu button:hover {
+    background: #eaf2ff;
+}
+
+/* SUBHEADER */
+
+.subheader {
+    background: #e3ebf7;
+    color: #163057;
+    text-align: center;
+    padding: 15px 10px;
+    border-bottom: 1px solid #cdd7e6;
+}
+
+.subheader h2 {
+    font-size: 20px;
+}
+
+/* TELAS */
+
+main {
+    min-height: calc(100vh - 140px);
+}
+
+.tela {
+    display: none;
+    max-width: 550px;
+    margin: 0 auto;
+    padding: 25px 20px;
+}
+
+/* CARDS */
+
+.card-suave {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    border-left: 5px solid #244a70;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+    margin-bottom: 22px;
+}
+
+.card-suave h2 {
+    text-align: center;
+    color: #1e3553;
+    margin-bottom: 20px;
+}
+
+/* CAMPOS */
+
+.campo {
+    margin-bottom: 15px;
+}
+
+.campo label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #14324d;
+}
+
+.campo input,
+.campo select {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 7px;
+    border: 1px solid #c8d4e3;
+    font-size: 14px;
+    background: #ffffff;
+}
+
+.aviso-matricula {
+    margin-top: 8px;
+    font-size: 13px;
+    color: #444;
+}
+
+/* BOTÕES */
+
+.btn-principal {
+    width: 100%;
+    padding: 12px;
+    background: #1a3d5d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    margin-top: 12px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.btn-secundario {
+    width: 100%;
+    padding: 11px;
+    background: #dde7f3;
+    color: #1a3d5d;
+    border: none;
+    border-radius: 8px;
+    margin-top: 10px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-link {
+    background: none;
+    border: none;
+    color: #1a3d5d;
+    text-decoration: underline;
+    cursor: pointer;
+    margin-top: 10px;
+    display: block;
+    text-align: center;
+    font-size: 14px;
+}
+
+.link-inline {
+    background: none;
+    border: none;
+    color: #1a3d5d;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+/* INFO-BLOCO LOGIN */
+
+.info-bloco {
+    background: #f0f4fa;
+    border-left: 4px solid #1a3d5d;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.info-bloco ul {
+    margin-left: 18px;
+    margin-top: 10px;
+}
+
+.info-bloco h3 {
+    margin-bottom: 8px;
+}
+
+/* STATUS */
+
+.status-bloco {
+    background: #f1f6ff;
+    padding: 15px;
+    border-radius: 12px;
+    border-left: 5px solid #1a3d5d;
+    margin-bottom: 20px;
+}
+
+.fila-info {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.fila-info h1 {
+    font-size: 48px;
+    color: #1a3d5d;
+}
+
+.msg-destaque {
+    text-align: center;
+    color: #1a3d5d;
+    font-weight: bold;
+}
+
+/* PAGAMENTO */
+
+.card-pagamento {
+    background: #ffffff;
+    padding: 16px;
+    border-radius: 12px;
+    border-left: 4px solid #0b8457;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+    margin-bottom: 20px;
+}
+
+.card-pagamento h3 {
+    margin-bottom: 10px;
+}
+
+.pix-area {
+    margin-top: 15px;
+}
+
+#pix-qrcode {
+    margin: 0 auto;
+    width: fit-content;
+}
+
+#pix-copia-cola {
+    width: 100%;
+    height: 70px;
+    margin-top: 5px;
+    resize: none;
+}
+
+/* QR RU */
+
+.qrcode-area {
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    border-left: none;
+    margin: 0 auto 10px auto;
+    box-shadow: none;
+    width: fit-content;
+}
+
+.qr-frase {
+    text-align: center;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #163057;
+}
+
+.qr-info {
+    background: #f1f6ff;
+    padding: 12px 15px;
+    border-radius: 10px;
+    border-left: 4px solid #1a3d5d;
+    font-size: 14px;
+}
+
+/* PREÇOS */
+
+.card-precos {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    border-left: 5px solid #305480;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+}
+
+.card-precos ul li {
+    margin: 10px 0;
+    font-size: 15px;
+}
+
+/* AJUDA / COMO */
+
+.card-ajuda {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    border-left: 5px solid #305480;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.card-ajuda h3 {
+    margin-top: 15px;
+    color: #153357;
+}
+
+.card-ajuda ul {
+    margin-left: 20px;
+    margin-top: 10px;
+}
+
+/* FOOTER */
+
+.rodape {
+    text-align: center;
+    background: #e6ecf5;
+    padding: 12px;
+    color: #555;
+    border-top: 1px solid #cbd4df;
+    margin-top: 40px;
+}
